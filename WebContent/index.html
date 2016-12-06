@@ -1,0 +1,76 @@
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+<style type="text/css">
+td {
+	border: 1px none white;
+	height: 50px;
+	width: 50px;
+}
+</style>
+<script type="text/javascript">
+	var grid = "         ".split('');
+	var turn = 0;
+	function submitGrid(arg) {
+		element = document.getElementById(arg);
+		if (grid[arg] == " ") {
+			if (turn % 2 == 0) {
+				element.setAttribute("value", "X");
+				grid[arg] = 'X';
+			} else {
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						grid = this.responseText;
+						document.getElementById("message").innerHTML = this.responseText;
+					}
+				};
+				xhttp.open("GET", "TicTacToeController", true);
+				xhttp.send("grid="+"naveendennis");
+			}
+			turn++;
+			
+
+		}
+
+	}
+</script>
+</head>
+<body>
+	<script>
+		document.getElementById("message").innerHTML = grid;
+	</script>
+	<div id="message"></div>
+	<div id="container">
+		<form id="formId">
+			<table id="sampleTbl">
+				<tr>
+					<td><input type="button" id="0"
+						style="width: 100%; height: 100%" onclick="submitGrid(this.id)" /></td>
+					<td><input type="button" id="1"
+						style="width: 100%; height: 100%" onclick="submitGrid(this.id)" /></td>
+					<td><input type="button" id="2"
+						style="width: 100%; height: 100%" onclick="submitGrid(this.id)" /></td>
+				</tr>
+				<tr>
+					<td><input type="button" id="3"
+						style="width: 100%; height: 100%" onclick="submitGrid(this.id)" /></td>
+					<td><input type="button" id="4"
+						style="width: 100%; height: 100%" onclick="submitGrid(this.id)" /></td>
+					<td><input type="button" id="5"
+						style="width: 100%; height: 100%" onclick="submitGrid(this.id)" /></td>
+				</tr>
+				<tr>
+					<td><input type="button" id="6"
+						style="width: 100%; height: 100%" onclick="submitGrid(this.id)" /></td>
+					<td><input type="button" id="7"
+						style="width: 100%; height: 100%" onclick="submitGrid(this.id)" /></td>
+					<td><input type="button" id="8"
+						style="width: 100%; height: 100%" onclick="submitGrid(this.id)" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>
