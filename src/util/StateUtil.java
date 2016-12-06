@@ -87,5 +87,17 @@ public class StateUtil {
 	public static boolean isGoalState(State state, Player player) {
 		return false;
 	}
+	
+	public static char[][] convertBoard(char[] board){
+		char[][] result = new char[3][3];
+		int index = 0;
+		for(int i = 0 ; i < result.length; i++){
+			for(int j = 0 ; j < result.length; j++){
+				result[i][j] = board[index];
+				index++;
+			}
+		}
+		return result;
+	}
 
 }

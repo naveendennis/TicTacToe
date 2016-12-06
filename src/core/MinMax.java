@@ -10,7 +10,7 @@ import util.StateUtil;
 
 public class MinMax {
 
-	public State minMaxDecision(State currentState, Player player) {
+	public static State minMaxDecision(State currentState, Player player) {
 		State chosenAction = null;
 		
 		List<State> successors = StateUtil.getSuccessors(currentState, player);
@@ -38,7 +38,7 @@ public class MinMax {
 		return chosenAction;
 	}
 
-	public int getMinMaxValue(State currentState, Player player) {
+	public static int getMinMaxValue(State currentState, Player player) {
 		if (StateUtil.isTerminalState(currentState, player)) {
 			return StateUtil.getUtility(currentState, player);
 		}
@@ -55,5 +55,35 @@ public class MinMax {
 		
 		
 	}
+	
+	
+	public static String getMove(int moveIndex){
+		int cursor = 0;
+		int i, j;
+		for(i = 0 ; i  < 3; i++){
+			for(j = 0 ; j  < 3 ; j++){
+				if(moveIndex == cursor)
+					return ((Integer)i).toString()+","+((Integer)j).toString();
+				cursor++;
+			}
+		}
+		return null;
+	}
+	
+	public static int getNextMove(State currentState, State newState){
+		char[][] currentBoard = currentState.getBoard();
+		char[][] newBoard = newState.getBoard();
+		int position = -1;
+		for(int i = 0 ; i < 3; i++){
+			for(int j = 0 ; j < 3 ; j++){
+				if(currentBoard[i][j] != newBoard[i][j]){
+					return ++position;
+				}
+				position++;
+			}
+		}
+		return position;
+	}
+
 
 }

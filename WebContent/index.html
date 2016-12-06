@@ -9,38 +9,43 @@ td {
 	width: 50px;
 }
 </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script type="text/javascript">
 	var grid = "         ".split('');
 	var turn = 0;
+	
 	function submitGrid(arg) {
+		
 		element = document.getElementById(arg);
 		if (grid[arg] == " ") {
 			if (turn % 2 == 0) {
 				element.setAttribute("value", "X");
 				grid[arg] = 'X';
 			} else {
-				var xhttp = new XMLHttpRequest();
-				xhttp.onreadystatechange = function() {
-					if (this.readyState == 4 && this.status == 200) {
-						grid = this.responseText;
-						document.getElementById("message").innerHTML = this.responseText;
-					}
-				};
-				xhttp.open("GET", "TicTacToeController", true);
-				xhttp.send("grid="+"naveendennis");
+				$.ajax({
+					  url: "TicTacToeController",
+					  type: "GET", //send it through get method
+					  data:{board:arg},
+					  success: function(response) {
+					    grid[response] = 'O';
+					    
+					  },
+					  error: function(xhr) {
+						  document.getElementById("message").innerHTML = xhr;
+					  }
+					});
+
+			}
+			for (i = 0 ; i < grid.length; i++){
+				document.getElementById(i).setAttribute("value", grid[i]);
 			}
 			turn++;
-			
-
 		}
 
 	}
 </script>
 </head>
 <body>
-	<script>
-		document.getElementById("message").innerHTML = grid;
-	</script>
 	<div id="message"></div>
 	<div id="container">
 		<form id="formId">
