@@ -9,38 +9,49 @@ td {
 	width: 50px;
 }
 </style>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script type="text/javascript">
 	var grid = "         ".split('');
-	var turn = 0;
-	
+
 	function submitGrid(arg) {
-		
+		console.log('server event triggered...')
 		element = document.getElementById(arg);
 		if (grid[arg] == " ") {
-			if (turn % 2 == 0) {
-				element.setAttribute("value", "X");
-				grid[arg] = 'X';
-			} else {
-				$.ajax({
-					  url: "TicTacToeController",
-					  type: "GET", //send it through get method
-					  data:{board:arg},
-					  success: function(response) {
-					    grid[response] = 'O';
-					    
-					  },
-					  error: function(xhr) {
-						  document.getElementById("message").innerHTML = xhr;
-					  }
-					});
+			element.setAttribute("value", "X");
+			grid[arg] = 'X';
+			$.ajax({
+				url : "TicTacToeController",
+				type : "GET", //send it through get method
+				data : {
+					playerMove : arg
+				},
+				success : function(response) {
+					console.log(response);
+					if(isNaN(parseInt(response[4]))){
+						console.log('winner declared...');
+						document.getElementById("message").innerHTML = response;
+					}else{
+						console.log('continued...');
+						resIndex = parseInt(response[4]);
+						console.log(resIndex);
+						grid[resIndex] = "O";
 
-			}
-			for (i = 0 ; i < grid.length; i++){
-				document.getElementById(i).setAttribute("value", grid[i]);
-			}
-			turn++;
+						for (i = 0; i < grid.length; i++) {
+							document.getElementById(i).setAttribute("value", grid[i]);
+						}
+
+					}
+					
+				},
+				error : function(xhr, status, error) {
+					var err = eval("(" + xhr.responseText + ")");
+					alert(err.Message);
+				}
+			});
+			
 		}
+
 
 	}
 </script>

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import beans.State;
 import core.MinMax;
 import core.Player;
+import util.StateUtil;
 
 /**
  * Servlet implementation class TicTacToeController
@@ -19,7 +20,7 @@ import core.Player;
 public class TicTacToeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private static State gameState = null;
+	private State gameState;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -33,21 +34,28 @@ public class TicTacToeController extends HttpServlet {
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		if (request.getSession().getAttribute("board") == null) {
-			char[][] board = new char[3][3];
-			gameState.setBoard(board);
+			gameState = new State(3);
+			gameState.setBoard(gameState.getBoard());
 			request.getSession().setAttribute("board", gameState.getBoard());
 		}
 		gameState.setBoard((char[][]) request.getSession().getAttribute("board"));
-		int moveIndex = Integer.parseInt(request.getParameter("board"));
+		int moveIndex = Integer.parseInt(request.getParameter("playerMove"));
 		String boardIndex = MinMax.getMove(moveIndex);
 		String[] positions = boardIndex.split(",");
 		gameState.setBoardValue('X', Integer.parseInt(positions[0]), Integer.parseInt(positions[1]));
 		response.setContentType("text/plain");
 		response.setCharacterEncoding("UTF-8");
-		State nextState = MinMax.minMaxDecision(gameState, Player.MIN_PLAYER);
-		int nextPosition = MinMax.getNextMove(gameState, nextState);
-		request.getSession().setAttribute("board", nextState.getBoard());
-		response.getWriter().write(nextPosition);
+		Player winner = StateUtil.stateWonByPlayer(gameState);
+		if (winner == null) {
+			State nextState = MinMax.minMaxDecision(gameState, Player.MIN_PLAYER);
+			int nextPosition = MinMax.getNextMove(gameState, nextState);
+			request.getSession().setAttribute("board", nextState.getBoard());
+			response.getWriter().write("Pos:" + nextPosition);
+		}else{
+			String user = (winner.equals(Player.MAX_PLAYER))?"Player":"Computer"; 
+			response.getWriter().write("Game won by "+user);
+			request.getSession().setAttribute("board", null);
+		}
 	}
 
 	/**
