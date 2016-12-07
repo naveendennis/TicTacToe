@@ -7,6 +7,7 @@ import beans.State;
 import core.Player;
 
 public class StateUtil {
+
 	public static int getUtility(State state, Player player) {
 		char searchItem = (Player.MAX_PLAYER.equals(player)) ? 'X' : 'O';
 		char antiItem = (searchItem == 'X') ? 'O' : 'X';
@@ -15,25 +16,22 @@ public class StateUtil {
 		char[][] board = state.getBoard();
 		int size = board.length;
 		int utility = 0;
-		if (stateWonByPlayer(state)!=null) {
-			if (stateWonByPlayer(state).equals(player)) {
-				for (int i = 0; i < size; i++) {
-					for (int j = 0; j < size; j++) {
-						if (board[i][j] == ' ') {
-							utility += 1000;
-						}
-					}
+		int blanks = 0;
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				if (board[i][j] == ' ') {
+					blanks++;
+					;
 				}
+			}
+		}
+		if (stateWonByPlayer(state) != null) {
+			if (stateWonByPlayer(state).equals(player)) {
+				utility += blanks * 1000;
 			}
 			Player opposition = (Player.MAX_PLAYER.equals(player) ? Player.MIN_PLAYER : Player.MAX_PLAYER);
 			if (stateWonByPlayer(state).equals(opposition)) {
-				for (int i = 0; i < size; i++) {
-					for (int j = 0; j < size; j++) {
-						if (board[i][j] == ' ') {
-							utility -= 1000;
-						}
-					}
-				}
+				utility -= blanks * 1000;
 			}
 		}
 		for (int row = 0; row < size; row++) {
@@ -44,12 +42,21 @@ public class StateUtil {
 					antiItemCount++;
 				}
 			}
-			if (searchCount == size) {
+			if (searchCount >= size) {
 				utility += 1000 * searchCount;
-			} 
-			if (antiItemCount == size) {
+			}
+			if (antiItemCount >= size) {
 				utility -= 800 * antiItemCount;
-			} 
+			}
+			if (searchCount == 0 && antiItemCount == size -1) {
+				utility -= antiItemCount * 500;
+			}
+			if (searchCount == size -1 && antiItemCount == 0) {
+				utility += searchCount * 500;
+			}
+			if (searchCount == 1 && antiItemCount == 0) {
+				utility += searchCount * 300;
+			}
 			searchCount = 0;
 			antiItemCount = 0;
 
@@ -62,30 +69,34 @@ public class StateUtil {
 					antiItemCount++;
 				}
 			}
-			if (searchCount == size) {
+			if (searchCount >= size) {
 				utility += 1000 * searchCount;
-			} 
-			if (antiItemCount == size) {
+			}
+			if (antiItemCount >= size) {
 				utility -= 800 * antiItemCount;
-			} 
+			}
+			if (searchCount == 0 && antiItemCount == size -1) {
+				utility -= antiItemCount * 500;
+			}
+			if (searchCount == size -1 && antiItemCount == 0) {
+				utility += searchCount * 500;
+			}
+			if (searchCount == 1 && antiItemCount == 0) {
+				utility += searchCount * 300;
+			}
 			searchCount = 0;
 			antiItemCount = 0;
 
 		}
-		int incrementor = 1;
-		boolean changeCond = false;
-		for (int iteration = 0, row = 0, column = 0; iteration < 2; iteration++) {
-			for (; true; row += incrementor, column += incrementor) {
+		int xincrementor = 1, yincrementor = 1;
+		for (int iteration = 0, row = 0, column = 0; iteration < size -1; iteration++) {
+			for (; true; row += xincrementor, column += yincrementor) {
 				if (row == size) {
-					changeCond = true;
 					break;
 				} else if (board[row][column] == searchItem) {
 					searchCount++;
 				} else if (board[row][column] == antiItem) {
 					antiItemCount++;
-				}
-				if (changeCond && row == 0) {
-					break;
 				}
 			}
 			if (searchCount == size) {
@@ -93,10 +104,21 @@ public class StateUtil {
 			}
 			if (antiItemCount == size) {
 				utility -= antiItemCount * 1000;
-			} 
-			incrementor = -1;
-			row += incrementor;
-			column += incrementor;
+			}
+			if (searchCount == 0 && antiItemCount == size -1) {
+				utility -= antiItemCount * 500;
+			}
+			if (searchCount == size -1 && antiItemCount == 0) {
+				utility += searchCount * 500;
+			}
+			if (searchCount == 1 && antiItemCount == 0) {
+				utility += searchCount * 500;
+			}
+			xincrementor = 1;
+			yincrementor = -1;
+			row = 0;
+			column = size - 1;
+			searchCount = 0;
 		}
 		return utility;
 	}
@@ -159,27 +181,25 @@ public class StateUtil {
 			searchCount = 0;
 
 		}
-		int incrementor = 1;
-		boolean changeCond = false;
+		int xincrementor = 1;
+		int yincrementor = 1;
 		for (int iteration = 0, row = 0, column = 0; !result && iteration < 2; iteration++) {
-			for (; true; row += incrementor, column += incrementor) {
+			for (; true; row += xincrementor, column += yincrementor) {
 				if (row == size) {
-					changeCond = true;
 					break;
 				} else if (board[row][column] == searchItem) {
 					searchCount++;
-				}
-				if (changeCond && row == 0) {
-					break;
 				}
 			}
 			if (searchCount == size) {
 				result = true;
 				break;
 			}
-			incrementor = -1;
-			row += incrementor;
-			column += incrementor;
+			xincrementor = 1;
+			yincrementor = -1;
+			row = 0;
+			column = size - 1;
+			searchCount = 0;
 		}
 		return result;
 	}

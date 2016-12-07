@@ -28,8 +28,16 @@ td {
 				},
 				success : function(response) {
 					console.log(response);
-					if(isNaN(parseInt(response[4]))){
+					if(response.length > 5){
 						console.log('winner declared...');
+						resIndex = parseInt(response[4]);
+						console.log(resIndex);
+						grid[resIndex] = "O";
+
+						for (i = 0; i < grid.length; i++) {
+							document.getElementById(i).setAttribute("value", grid[i]);
+						}
+
 						document.getElementById("message").innerHTML = response;
 					}else{
 						console.log('continued...');
