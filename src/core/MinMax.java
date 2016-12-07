@@ -35,21 +35,23 @@ public class MinMax {
 
 	}
 
-	public static int getMinMaxValue(State currentState, Player player) {
-		if (StateUtil.isTerminalState(currentState, player)) {
-			return StateUtil.getUtility(currentState, Player.MIN_PLAYER);
+	
+	public static int getMinMaxValue(State currentState, Player player){
+		int utilityValue = -1;
+		if (StateUtil.isTerminalState(currentState)) {
+			utilityValue = StateUtil.getUtility(currentState, Player.MIN_PLAYER);
+			return utilityValue;
 		} else {
-			int utilityValue = (player.equals(Player.MAX_PLAYER)) ? -2147483648 : 2147483647;
+			utilityValue = (player.equals(Player.MAX_PLAYER)) ? -2147483648 : 2147483647;
 			for (State eachSuccessor : StateUtil.getSuccessors(currentState, player)) {
 				if (Player.MAX_PLAYER.equals(player)) {
-					return Math.max(utilityValue, getMinMaxValue(eachSuccessor, Player.MIN_PLAYER));
+					utilityValue =  Math.max(utilityValue, getMinMaxValue(eachSuccessor, Player.MIN_PLAYER));
 				} else {
-					return Math.min(utilityValue, getMinMaxValue(eachSuccessor, Player.MAX_PLAYER));
+					utilityValue = Math.min(utilityValue, getMinMaxValue(eachSuccessor, Player.MAX_PLAYER));
 				}
 			}
 		}
-		return -1;
-
+		return utilityValue;
 	}
 
 	public static String getMove(int moveIndex) {

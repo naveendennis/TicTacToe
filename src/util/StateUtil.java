@@ -15,11 +15,23 @@ public class StateUtil {
 		char[][] board = state.getBoard();
 		int size = board.length;
 		int utility = 0;
-		if (stateWonByPlayer(state) != null) {
-			for (int i = 0; i < size; i++) {
-				for (int j = 0; j < size; j++) {
-					if (board[i][j]== ' ') {
-						utility += 200;
+		if (stateWonByPlayer(state)!=null) {
+			if (stateWonByPlayer(state).equals(player)) {
+				for (int i = 0; i < size; i++) {
+					for (int j = 0; j < size; j++) {
+						if (board[i][j] == ' ') {
+							utility += 1000;
+						}
+					}
+				}
+			}
+			Player opposition = (Player.MAX_PLAYER.equals(player) ? Player.MIN_PLAYER : Player.MAX_PLAYER);
+			if (stateWonByPlayer(state).equals(opposition)) {
+				for (int i = 0; i < size; i++) {
+					for (int j = 0; j < size; j++) {
+						if (board[i][j] == ' ') {
+							utility -= 1000;
+						}
 					}
 				}
 			}
@@ -34,14 +46,10 @@ public class StateUtil {
 			}
 			if (searchCount == size) {
 				utility += 1000 * searchCount;
-			} else if (searchCount >= 2) {
-				utility += 100;
-			}
+			} 
 			if (antiItemCount == size) {
 				utility -= 800 * antiItemCount;
-			} else if (antiItemCount >= 2) {
-				utility -= 100 * antiItemCount;
-			}
+			} 
 			searchCount = 0;
 			antiItemCount = 0;
 
@@ -56,14 +64,10 @@ public class StateUtil {
 			}
 			if (searchCount == size) {
 				utility += 1000 * searchCount;
-			} else if (searchCount >= 2) {
-				utility += 100 * searchCount;
-			}
+			} 
 			if (antiItemCount == size) {
 				utility -= 800 * antiItemCount;
-			} else if (antiItemCount >= 2) {
-				utility -= 100 * antiItemCount;
-			}
+			} 
 			searchCount = 0;
 			antiItemCount = 0;
 
@@ -86,14 +90,10 @@ public class StateUtil {
 			}
 			if (searchCount == size) {
 				utility += searchCount * 1000;
-			}else if(searchCount >= 2){
-				utility += searchCount *100;
 			}
 			if (antiItemCount == size) {
 				utility -= antiItemCount * 1000;
-			}else if(antiItemCount >= 2){
-				utility += antiItemCount * 100;
-			}
+			} 
 			incrementor = -1;
 			row += incrementor;
 			column += incrementor;
@@ -118,8 +118,13 @@ public class StateUtil {
 		return successors;
 	}
 
-	public static boolean isTerminalState(State state, Player player) {
-		return StateUtil.getSuccessors(state, player).size() == 0 || StateUtil.stateWonByPlayer(state) != null;
+	public static boolean isTerminalState(State state) {
+		return StateUtil.getSuccessors(state, Player.MAX_PLAYER).size() == 0
+				|| StateUtil.stateWonByPlayer(state) != null;
+	}
+
+	public static boolean isDraw(State state) {
+		return StateUtil.getSuccessors(state, Player.MAX_PLAYER).size() == 0;
 	}
 
 	public static boolean isGoalState(State state, Player player) {

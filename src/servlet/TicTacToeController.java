@@ -33,6 +33,9 @@ public class TicTacToeController extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+		response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+		response.setDateHeader("Expires", 0);
 		if (request.getSession().getAttribute("board") == null) {
 			gameState = new State(3);
 			gameState.setBoard(gameState.getBoard());
@@ -46,13 +49,20 @@ public class TicTacToeController extends HttpServlet {
 		response.setContentType("text/plain");
 		response.setCharacterEncoding("UTF-8");
 		Player winner = StateUtil.stateWonByPlayer(gameState);
-		if (winner == null) {
+		if (!StateUtil.isTerminalState(gameState)) {
 			State nextState = MinMax.minMaxDecision(gameState, Player.MIN_PLAYER);
 			int nextPosition = MinMax.getNextMove(gameState, nextState);
 			request.getSession().setAttribute("board", nextState.getBoard());
 			response.getWriter().write("Pos:" + nextPosition);
+			winner = StateUtil.stateWonByPlayer(nextState);
+			if(StateUtil.isTerminalState(nextState)){
+				String user = (Player.MAX_PLAYER.equals(winner))?"Player":Player.MIN_PLAYER.equals(winner)? "Computer" : "No One"; 
+				response.getWriter().write("Game won by "+user);
+				request.getSession().setAttribute("board", null);
+			}
+			
 		}else{
-			String user = (winner.equals(Player.MAX_PLAYER))?"Player":"Computer"; 
+			String user = (Player.MAX_PLAYER.equals(winner))?"Player":Player.MIN_PLAYER.equals(winner)? "Computer" : "No One"; 
 			response.getWriter().write("Game won by "+user);
 			request.getSession().setAttribute("board", null);
 		}
